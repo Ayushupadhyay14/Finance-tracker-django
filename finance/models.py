@@ -1,23 +1,29 @@
 from django.db import models
 from django.contrib.auth.models import User
-# Create your models here.
-
-# It is used to create a database for a data model and create a table in the database.
-# Database name: SQLite-3
 
 
 class Transaction(models.Model):
-    TRANSACTION_TYPE = [
+    TRANSACTION_TYPES = [
         ('Income', 'Income'),
-        ('Expence', 'Expence'),
-        ('Transfer', 'Transfer'),
-        ('Investment', 'Investment'),
-        ('Loan Payment', 'Loan Payment')
+        ('Expense', 'Expense')
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    title = models.CharField(max_length=256)
+    title = models.CharField(max_length=255)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    transaction_type = models.CharField(max_length=15,
-                                        choices=TRANSACTION_TYPE)
+    transaction_type = models.CharField(
+        max_length=10, choices=TRANSACTION_TYPES)
     date = models.DateField()
-    category = models.CharField(max_length=355)
+    category = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.title
+
+
+class Goal(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    target_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    deadline = models.DateField()
+
+    def __str__(self):
+        return self.name

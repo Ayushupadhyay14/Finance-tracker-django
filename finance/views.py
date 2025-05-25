@@ -1,9 +1,14 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views import View
-from finance.forms import RegisterForm,TransactionForm
+# create this if you haven't
+from finance.forms import RegisterForm, TransactionForm, GoalForm
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
+from .models import Transaction, Goal
+
+
 # Create your views here.
 # it use to create a bussiness logis :
 
@@ -26,29 +31,41 @@ class DashboradView(LoginRequiredMixin, View):
         return render(request, 'finance/dashboard.html')
 
 
+
+
 class TransactionCreateView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         form = TransactionForm()
-        return render(request, 'finance/transaction_form.html',{'form': form})
+        return render(request, 'finance/transaction_form.html', {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = TransactionForm(request.POST)
+        if form.is_valid():
+            transaction = form.save(commit=False)
+            transaction.user = request.user
+            transaction.save()
+            return redirect('dashboard')
+            message.success(request, 'transaction added succesfully')
+        return render(request, 'finance/transaction_form.html', {'form': form})
 
 
+class TransactionListView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        transactions = Transaction.objects.all()
+        return render(request, 'finance/transaction_list.html', {'transactions': transactions})
 
 
+class GoalCreateView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        form = GoalForm()
+        return render(request, 'finance/goal_form.html', {'form': form})
 
-
-
-"""for EXAMPLE PURPOSE CODE IN HTML AND CSS"""
-# #functio based viwe in django
-# def home(req):
-#     return render(req, 'finance/home.html'),
-
-# # class based viwes
-# class HomeView(View):
-#     def get(sef, request, *args, **kwargs):
-#         return HttpResponse("<h1> hellow Ayush Upadhyay</h1>")
-
-
-# # class based view template :
-# class HomeView(View):
-#     def get(sef, request, *args, **kwargs):
-#         return render(request,'finance/home.html')
+    def post(self, request, *args, **kwargs):
+        form = GoalForm(request.POST)
+        if form.is_valid():
+            goal = form.save(commit=False)
+            goal.user = request.user
+            goal.save()
+            return redirect('dashboard')
+            # message.success(request, 'transaction added succesfully')
+        return render(request, 'finance/goal_form.html', {'form': form})
