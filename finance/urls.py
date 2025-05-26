@@ -8,4 +8,5 @@ urlpatterns = [
          name='transaction_list'),
     path('goal/add/', GoalCreateView.as_view(),
          name='goal_add'),
+    #     path('generate-report/', export_transactions, name='export_transactions'),
 ]

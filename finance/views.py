@@ -5,13 +5,13 @@ from django.views import View
 from finance.forms import RegisterForm, TransactionForm, GoalForm
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib import messages
+# from django.contrib import messages
 from .models import Transaction, Goal
+from django.db.models import Sum
 
 
 # Create your views here.
 # it use to create a bussiness logis :
-
 
 class RegisterView(View):
     def get(self, request, *args, **kwargs):
@@ -28,12 +28,41 @@ class RegisterView(View):
 
 class DashboradView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
-        return render(request, 'finance/dashboard.html')
+        transactions = Transaction.objects.filter(user=request.user)
+        goal = Goal.objects.filter(user=request.user)
 
+# calculate total income and expences
+        total_income = Transaction.objects.filter(
+            user=request.user, transaction_type='Income').aggregate(Sum('amount'))['amount__sum'] or 0
+        total_expense = Transaction.objects.filter(
+            user=request.user, transaction_type='Expense').aggregate(Sum('amount'))['amount__sum'] or 0
 
+        net_savings = total_income - total_expense
+        remaining_savings = net_savings
+        goal_progress = []
+        for goal in goal:
+            if remaining_savings >= goal.target_amount:
+                goal_progress.append({'goal': goal, 'progress': 100})
+                remaining_savings = goal.target_amount
+            elif remaining_savings > 0:
+                progress = (remaining_savings/goal.target_amount)*100
+                goal_progress.append({'goal': goal, 'progress': progress})
+                remaining_savings = 0
+            else:
+                goal_progress.append({'goal': goal, 'progress': 0})
+
+        context = {
+            'transactions': transactions,
+            'total_income': total_income,
+            'total_expence': total_expense,
+            'net_savings': net_savings,
+            'goal_progress': goal_progress,
+        }
+        return render(request, 'finance/dashboard.html', context)
 
 
 class TransactionCreateView(LoginRequiredMixin, View):
+
     def get(self, request, *args, **kwargs):
         form = TransactionForm()
         return render(request, 'finance/transaction_form.html', {'form': form})
