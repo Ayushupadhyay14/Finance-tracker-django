@@ -16,7 +16,7 @@ class Transaction(models.Model):
     category = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.title
+        return f"{self.user.username} - {self.transaction_type} - ₹{self.amount}"
 
 
 class Goal(models.Model):
@@ -26,4 +26,4 @@ class Goal(models.Model):
     deadline = models.DateField()
 
     def __str__(self):
-        return self.name
+        return self.name, self.target_amount, self.deadline
