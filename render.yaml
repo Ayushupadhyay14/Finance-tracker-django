@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: djfintracker-backend
+    runtime: python
+    buildCommand: pip install -r requirment.txt
+    startCommand: gunicorn djfintracker.wsgi:application --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DJANGO_SETTINGS_MODULE
+        value: djfintracker.settings
+      - key: SECRET_KEY
+        value: your-secret-key-here
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: djfintracker.onrender.com
+      - key: DATABASE_URL
+        value: your-render-postgres-url
