@@ -33,6 +33,10 @@ DEBUG = True
 # ALLOWED_HOSTS = ['0.0.0.0:8000']
 ALLOWED_HOSTS = ["finance-tracker-django-3.onrender.com"]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://finance-tracker-django-3.onrender.com"
+]
+
 
 # Application definition
 
