@@ -24,6 +24,11 @@ SECRET_KEY = 'django-insecure-fxdwg@6x!ine%1qmr14y65rzoy6w7ko=n=^wq+tcgsyz(h9+#f
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "finance-tracker-django-3.onrender.com"
+]
 
 ALLOWED_HOSTS = ['0.0.0.0:8000']
 
